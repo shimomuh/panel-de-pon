@@ -6,6 +6,8 @@ namespace PanelDePon.UI
 {
     public class PanelPresenter : MonoBehaviour
     {
+        public static int HEIGHT = 90, WIDTH = 90;
+
         [SerializeField] private GameObject sun;
         [SerializeField] private GameObject cloud;
         [SerializeField] private GameObject rain;
@@ -18,7 +20,7 @@ namespace PanelDePon.UI
 
         public void Initialize()
         {
-            switch((int)Random.Range(0, 5))
+            switch((int)Random.Range(0, 6))
             {
                 case 0:
                     mark = sun;
@@ -39,14 +41,14 @@ namespace PanelDePon.UI
                     mark = snow;
                     break;
                 default:
-                    throw new System.Exception("Out!");
+                    throw new System.Exception("Error!");
             }
             mark.SetActive(true);
         }
 
-        public void SetParent(Transform p, bool worldPositionStays)
+        public void SetParent(Transform p)
         {
-            mark.transform.SetParent(p, worldPositionStays);
+            mark.transform.SetParent(p, false);
         }
 
         public void SetPosition(int x, int y)
