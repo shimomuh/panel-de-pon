@@ -93,7 +93,7 @@ namespace PanelDePon.Application
                         matrix[i][j] = panels.Extract(new List<int>() { matrix[i][j - 1], matrix[i - 1][j] }).RandomTake();
                         continue;
                     }
-                    matrix[i][j] = panels.RandomTake();
+                    matrix[i][j] = panels.Extract(matrix[i][j - 1]).RandomTake();
                 }
             }
         }
