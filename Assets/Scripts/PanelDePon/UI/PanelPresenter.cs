@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace PanelDePon.UI
 {
+    /// <summary>
+    /// Panel Factory
+    /// </summary>
     public class PanelPresenter : MonoBehaviour
     {
         public static int HEIGHT = 90, WIDTH = 90;
@@ -16,33 +19,18 @@ namespace PanelDePon.UI
         [SerializeField] private GameObject snow;
         [SerializeField] private GameObject rainbow;
 
+        private GameObject[] weathers;
+
         private GameObject mark;
 
-        public void Initialize()
+        private void Awake()
         {
-            switch((int)Random.Range(0, 6))
-            {
-                case 0:
-                    mark = sun;
-                    break;
-                case 1:
-                    mark = cloud;
-                    break;
-                case 2:
-                    mark = rain;
-                    break;
-                case 3:
-                    mark = moon;
-                    break;
-                case 4:
-                    mark = thunder;
-                    break;
-                case 5:
-                    mark = snow;
-                    break;
-                default:
-                    throw new System.Exception("Error!");
-            }
+            weathers = new GameObject[] { sun, cloud, rain, moon, thunder, snow };
+        }
+
+        public void Initialize(int weatherIndex, bool canAppearSpecial) // canAppearSpecial is not implement
+        {
+            mark = weathers[weatherIndex];
             mark.SetActive(true);
         }
 

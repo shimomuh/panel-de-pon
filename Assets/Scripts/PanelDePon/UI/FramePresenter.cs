@@ -1,36 +1,44 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PanelDePon.Application;
 
 namespace PanelDePon.UI
 {
     /// <summary>
-    /// PanelPresenter を包含するビジネスプレゼンター
+    /// Business Presenter within PanelPresenter
     /// </summary>
     public class FramePresenter : MonoBehaviour
     {
-        public static int WIDTH_PANEL_NUM = 6, HEIGHT_PANEL_NUM = 12;
+        public static int WIDTH_PANEL_NUM = 6, HEIGHT_PANEL_NUM = 12; // FIXME: domainに定義されるべき
 
         [SerializeField] private PanelPresenter panelSkeleton;
 
-        void Start()
+        void Awake()
         {
             RectTransform frame = GetComponent<RectTransform>();
-            for (var i = 0; i < WIDTH_PANEL_NUM * HEIGHT_PANEL_NUM; i++)
+            List<List<int>> matrix = BattleSystem.Instance.InitializePanelMatrix();
+
+            for (var column = 0; column < matrix.Count; column++)
             {
-                PanelPresenter a = Instantiate<PanelPresenter>(panelSkeleton);
-                a.Initialize();
-                SetPanelPosition(a, i);
-                a.SetParent(frame);
+                for (var row = 0; row < matrix[column].Count; row++)
+                {
+                    PanelPresenter panel = Instantiate<PanelPresenter>(panelSkeleton);
+                    panel.Initialize(matrix[column][row], false);
+                    SetPanelPosition(panel, column, row);
+                    panel.SetParent(frame);
+                }
             }
         }
 
-        private void SetPanelPosition(PanelPresenter panel, int index)
+        /// <summary>
+        /// change column to x coordinate, row to y coordinate.
+        /// </summary>
+        private void SetPanelPosition(PanelPresenter panel, int column, int row)
         {
-            var x = (int)(-PanelPresenter.WIDTH * WIDTH_PANEL_NUM / 2 + PanelPresenter.WIDTH / 2) + index % WIDTH_PANEL_NUM * PanelPresenter.WIDTH;
-            var y = (int)(-PanelPresenter.HEIGHT * HEIGHT_PANEL_NUM / 2 + PanelPresenter.HEIGHT / 2 + index / WIDTH_PANEL_NUM * PanelPresenter.HEIGHT);
+            var x = (int)(-PanelPresenter.WIDTH * WIDTH_PANEL_NUM / 2 + PanelPresenter.WIDTH / 2) + column * PanelPresenter.WIDTH;
+            var y = (int)(-PanelPresenter.HEIGHT * HEIGHT_PANEL_NUM / 2 + PanelPresenter.HEIGHT / 2 + row * PanelPresenter.HEIGHT);
             panel.SetPosition(x, y);
         }
     }
-
 }
