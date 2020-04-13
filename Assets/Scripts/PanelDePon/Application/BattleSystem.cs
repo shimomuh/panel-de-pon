@@ -24,12 +24,12 @@ namespace PanelDePon.Application
 
         public List<List<int>> InitializePanelMatrix()
         {
-            List<List<int>> matrix = DeployPanelRandomly();
-            OverrideMark(matrix);
+            List<List<int>> matrix = PlacePanelRandomly();
+            PutMark(matrix);
             return matrix;
         }
 
-        private List<List<int>> DeployPanelRandomly()
+        private List<List<int>> PlacePanelRandomly()
         {
 
             List<List<int>> matrix = new List<List<int>>();
@@ -61,7 +61,7 @@ namespace PanelDePon.Application
             return matrix;
         }
 
-        private void OverrideMark(List<List<int>> matrix)
+        private void PutMark(List<List<int>> matrix)
         {
             List<int> panels = new List<int>() { 0, 1, 2, 3, 4, 5 };
             for (int i = 0; i < matrix.Count; i++)
