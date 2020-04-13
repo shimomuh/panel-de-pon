@@ -73,22 +73,16 @@ namespace PanelDePon.Application
                         matrix[i][j] = panels.RandomTake();
                         continue;
                     }
-                    List<int> selectedPanels = new List<int>();
-                    int unduplicatedMark;
                     if (i == 0)
                     {
-                        selectedPanels = (List<int>)panels.Extract(matrix[i][j - 1]);
-                        unduplicatedMark = selectedPanels.RandomTake();
-                        matrix[i][j] = unduplicatedMark;
+                        matrix[i][j] = panels.Extract(matrix[i][j - 1]).RandomTake();
                         continue;
                     }
                     if (j == 0)
                     {
                         if (matrix[i - 1].Count > j)
                         {
-                            selectedPanels = (List<int>)panels.Extract(matrix[i - 1][j]);
-                            unduplicatedMark = selectedPanels.RandomTake();
-                            matrix[i][j] = unduplicatedMark;
+                            matrix[i][j] = panels.Extract(matrix[i - 1][j]).RandomTake();
                             continue;
                         }
                         matrix[i][j] = panels.RandomTake();
@@ -96,9 +90,7 @@ namespace PanelDePon.Application
                     }
                     if (matrix[i - 1].Count > j)
                     {
-                        selectedPanels = (List<int>)panels.Extract(new List<int>() { matrix[i][j - 1], matrix[i - 1][j] });
-                        unduplicatedMark = selectedPanels.RandomTake();
-                        matrix[i][j] = unduplicatedMark;
+                        matrix[i][j] = panels.Extract(new List<int>() { matrix[i][j - 1], matrix[i - 1][j] }).RandomTake();
                         continue;
                     }
                     matrix[i][j] = panels.RandomTake();
