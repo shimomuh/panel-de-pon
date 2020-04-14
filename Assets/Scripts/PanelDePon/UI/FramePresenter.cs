@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using PanelDePon.Application;
+using PanelDePon.Domain;
 
 namespace PanelDePon.UI
 {
@@ -10,21 +10,20 @@ namespace PanelDePon.UI
     /// </summary>
     public class FramePresenter : MonoBehaviour
     {
-        public static int WIDTH_PANEL_NUM = 6, HEIGHT_PANEL_NUM = 12; // FIXME: domainに定義されるべき
 
         [SerializeField] private PanelPresenter panelSkeleton;
 
         void Awake()
         {
             RectTransform frame = GetComponent<RectTransform>();
-            List<List<int>> matrix = BattleSystem.Instance.InitializePanelMatrix();
+            List<List<PanelModel>> panels = BattleSystem.Instance.PlaceInitialPanels();
 
-            for (var column = 0; column < matrix.Count; column++)
+            for (var column = 0; column < panels.Count; column++)
             {
-                for (var row = 0; row < matrix[column].Count; row++)
+                for (var row = 0; row < panels[column].Count; row++)
                 {
                     PanelPresenter panel = Instantiate<PanelPresenter>(panelSkeleton);
-                    panel.Initialize(matrix[column][row], false);
+                    panel.Initialize(panels[column][row].Mark, false);
                     SetPanelPosition(panel, column, row);
                     panel.SetParent(frame);
                 }
@@ -36,8 +35,8 @@ namespace PanelDePon.UI
         /// </summary>
         private void SetPanelPosition(PanelPresenter panel, int column, int row)
         {
-            var x = (int)(-PanelPresenter.WIDTH * WIDTH_PANEL_NUM / 2 + PanelPresenter.WIDTH / 2) + column * PanelPresenter.WIDTH;
-            var y = (int)(-PanelPresenter.HEIGHT * HEIGHT_PANEL_NUM / 2 + PanelPresenter.HEIGHT / 2 + row * PanelPresenter.HEIGHT);
+            var x = (int)(-PanelPresenter.WIDTH * FrameModel.WIDTH_PANEL_NUM / 2 + PanelPresenter.WIDTH / 2) + column * PanelPresenter.WIDTH;
+            var y = (int)(-PanelPresenter.HEIGHT * FrameModel.HEIGHT_PANEL_NUM / 2 + PanelPresenter.HEIGHT / 2 + row * PanelPresenter.HEIGHT);
             panel.SetPosition(x, y);
         }
     }

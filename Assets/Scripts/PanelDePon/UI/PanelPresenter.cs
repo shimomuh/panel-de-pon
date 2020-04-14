@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PanelDePon.UI
 {
@@ -28,9 +26,32 @@ namespace PanelDePon.UI
             weathers = new GameObject[] { sun, cloud, rain, moon, thunder, snow };
         }
 
-        public void Initialize(int weatherIndex, bool canAppearSpecial) // canAppearSpecial is not implement
+        public void Initialize(string markType, bool canAppearSpecial) // canAppearSpecial is not implement
         {
-            mark = weathers[weatherIndex];
+            switch (markType)
+            {
+                case "Sun":
+                    mark = sun;
+                    break;
+                case "Cloud":
+                    mark = cloud;
+                    break;
+                case "Rain":
+                    mark = rain;
+                    break;
+                case "Moon":
+                    mark = moon;
+                    break;
+                case "Thunder":
+                    mark = thunder;
+                    break;
+                case "Snow":
+                    mark = snow;
+                    break;
+                case "Rainbow":
+                    mark = rainbow;
+                    break;
+            }
             mark.SetActive(true);
         }
 
