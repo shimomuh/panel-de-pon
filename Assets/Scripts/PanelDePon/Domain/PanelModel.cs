@@ -14,9 +14,23 @@ namespace PanelDePon.Domain
 
         private static string specialMark = "Rainbow";
 
+        public static PanelModel buildErasablePanel()
+        {
+            var model =  new PanelModel();
+            model.erasable = true;
+            model.isRisingUp = true;
+            return model;
+        }
+
         public string Mark { get; private set; }
 
-        public List<string> selectableMarks;
+        public bool IsRisingUp { get { return isRisingUp; } }
+
+        private bool erasable;
+
+        private bool isRisingUp = true;
+
+        private List<string> selectableMarks;
 
         public PanelModel() {
             selectableMarks = defaultMarks;
@@ -49,6 +63,31 @@ namespace PanelDePon.Domain
         public void SetMarkRandomlyExceptFor(List<string> marks)
         {
             Mark = selectableMarks.Extract(marks).RandomTake();
+        }
+
+        public void ShowUpCompletely()
+        {
+            erasable = true;
+        }
+
+        public void DropDown()
+        {
+            erasable = false;
+        }
+
+        public void Swip()
+        {
+            erasable = false;
+        }
+
+        public void StopRisingUp()
+        {
+            isRisingUp = false;
+        }
+
+        public void RisingUp()
+        {
+            isRisingUp = true;
         }
     }
 }

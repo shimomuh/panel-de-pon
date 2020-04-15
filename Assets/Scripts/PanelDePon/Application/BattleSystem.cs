@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using SupportDomain;
 using PanelDePon.Domain;
 
 namespace PanelDePon.Application
@@ -28,6 +26,11 @@ namespace PanelDePon.Application
         public List<List<PanelModel>> PlaceInitialPanels()
         {
             return PanelFactory.Instance.Place();
+        }
+
+        public List<List<PanelModel>> PrepareHiddenPanels()
+        {
+            return PanelFactory.Instance.Produce();
         }
     }
 }

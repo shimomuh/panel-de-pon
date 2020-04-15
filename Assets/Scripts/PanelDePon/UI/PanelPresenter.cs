@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using PanelDePon.Domain;
 
 namespace PanelDePon.UI
 {
@@ -19,16 +20,30 @@ namespace PanelDePon.UI
 
         private GameObject[] weathers;
 
+        private PanelModel model;
+
         private GameObject mark;
 
-        private void Awake()
+        private int speed;
+
+        void Awake()
         {
+            UnityEngine.Application.targetFrameRate = 60;
+            speed = 20; // normal?
             weathers = new GameObject[] { sun, cloud, rain, moon, thunder, snow };
         }
 
-        public void Initialize(string markType, bool canAppearSpecial) // canAppearSpecial is not implement
+        void Update()
         {
-            switch (markType)
+            if (model.IsRisingUp) {
+                mark.transform.position = new Vector2(mark.transform.position.x, mark.transform.position.y + Time.deltaTime * speed);
+            }
+        }
+
+        public void Initialize(PanelModel model, bool canAppearSpecial) // canAppearSpecial is not implement
+        {
+            this.model = model;
+            switch (model.Mark)
             {
                 case "Sun":
                     mark = sun;
