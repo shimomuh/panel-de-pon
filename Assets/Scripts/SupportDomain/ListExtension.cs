@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SupportDomain
 {
-    public static class ListExtensions
+    public static class ListExtension
     {
         public static void Shuffle<T>(this IList<T> list)
         {
@@ -15,6 +15,24 @@ namespace SupportDomain
                 list[j] = tmp;
             }
         }
+
+        public static List<T> DeepCopyAndAddAndReturn<T>(this IList<T> list, T t) where T : IComparable<T>
+        {
+            var result = new List<T>(list);
+            result.Add(t);
+            return result;
+        }
+
+        public static List<T> DeepCopyAndAddAndReturn<T>(this IList<T> list, IList<T> ts) where T : IComparable<T>
+        {
+            var result = new List<T>(list);
+            foreach (var t in ts)
+            {
+                result.Add(t);
+            }
+            return result;
+        }
+
         public static T RandomTake<T>(this IList<T> list) where T : IComparable<T>
         {
             int index = UnityEngine.Random.Range(0, list.Count);

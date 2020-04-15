@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using PanelDePon.Domain;
 
 namespace PanelDePon.UI
 {
@@ -21,16 +20,53 @@ namespace PanelDePon.UI
 
         private GameObject[] weathers;
 
+        private PanelModel model;
+
         private GameObject mark;
 
-        private void Awake()
+        private int speed;
+
+        void Awake()
         {
+            UnityEngine.Application.targetFrameRate = 60;
+            speed = 20; // normal?
             weathers = new GameObject[] { sun, cloud, rain, moon, thunder, snow };
         }
 
-        public void Initialize(int weatherIndex, bool canAppearSpecial) // canAppearSpecial is not implement
+        void Update()
         {
-            mark = weathers[weatherIndex];
+            if (model.IsRisingUp) {
+                mark.transform.position = new Vector2(mark.transform.position.x, mark.transform.position.y + Time.deltaTime * speed);
+            }
+        }
+
+        public void Initialize(PanelModel model, bool canAppearSpecial) // canAppearSpecial is not implement
+        {
+            this.model = model;
+            switch (model.Mark)
+            {
+                case "Sun":
+                    mark = sun;
+                    break;
+                case "Cloud":
+                    mark = cloud;
+                    break;
+                case "Rain":
+                    mark = rain;
+                    break;
+                case "Moon":
+                    mark = moon;
+                    break;
+                case "Thunder":
+                    mark = thunder;
+                    break;
+                case "Snow":
+                    mark = snow;
+                    break;
+                case "Rainbow":
+                    mark = rainbow;
+                    break;
+            }
             mark.SetActive(true);
         }
 
