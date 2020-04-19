@@ -22,7 +22,6 @@ namespace PanelDePon.Domain
 
         public static int INITIAL_PANEL_NUM = 30;
         public static int MAX_INITIAL_PANEL_NUM_BY_COLUMN = 7;
-        public static int BLUK_PRODUCT_PANEL_NUM_BY_COLUMN = 6;
 
         private List<List<PanelModel>> initialPanels = new List<List<PanelModel>>();
 

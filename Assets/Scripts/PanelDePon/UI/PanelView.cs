@@ -20,15 +20,13 @@ namespace PanelDePon.UI
         [SerializeField] private GameObject snow;
         [SerializeField] private GameObject rainbow;
 
-        private GameObject[] weathers;
-
         private PanelModel model;
 
         private GameObject mark;
 
-        private Vector2 onBeginDragPosition;
-
         private int speed;
+
+        private float beginDragX;
 
         public Action<Vector2> OnSwapLeft;
         public Action<Vector2> OnSwapRight;
@@ -37,7 +35,6 @@ namespace PanelDePon.UI
         {
             UnityEngine.Application.targetFrameRate = 60;
             speed = 20; // normal?
-            weathers = new GameObject[] { sun, cloud, rain, moon, thunder, snow };
         }
 
         void Update()
@@ -80,27 +77,28 @@ namespace PanelDePon.UI
 
         public void SetParent(Transform p)
         {
-            gameObject.transform.SetParent(p, false);
+            transform.SetParent(p, false);
         }
 
         public void SetPosition(int x, int y)
         {
-            mark.transform.position = new Vector2(x, y);
+            transform.localPosition = new Vector2(x, y);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            onBeginDragPosition = eventData.delta;
+            beginDragX = eventData.position.x;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (eventData.delta.x > onBeginDragPosition.x)
+            if (eventData.position.x < beginDragX)
             {
-                OnSwapLeft(mark.transform.position);
+                OnSwapLeft(transform.localPosition);
             }
-            else {
-                OnSwapRight(mark.transform.position);
+            if (eventData.position.x > beginDragX)
+            {
+                OnSwapRight(transform.localPosition);
             }
         }
 
