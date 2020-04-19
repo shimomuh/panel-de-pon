@@ -28,7 +28,7 @@ namespace PanelDePon.Application
             return PanelFactory.Instance.Place();
         }
 
-        public List<List<PanelModel>> PrepareHiddenPanels()
+        public List<PanelModel> PrepareHiddenPanels()
         {
             return PanelFactory.Instance.Produce();
         }
