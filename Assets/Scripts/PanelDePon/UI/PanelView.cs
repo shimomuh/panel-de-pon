@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using PanelDePon.Domain;
+using UnityEngine.EventSystems;
+using System;
 
 namespace PanelDePon.UI
 {
     /// <summary>
     /// Panel Factory
     /// </summary>
-    public class PanelPresenter : MonoBehaviour
+    public class PanelView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         public static int HEIGHT = 90, WIDTH = 90;
 
@@ -24,7 +26,12 @@ namespace PanelDePon.UI
 
         private GameObject mark;
 
+        private Vector2 onBeginDragPosition;
+
         private int speed;
+
+        public Action<Vector2> OnSwapLeft;
+        public Action<Vector2> OnSwapRight;
 
         void Awake()
         {
@@ -67,17 +74,39 @@ namespace PanelDePon.UI
                     mark = rainbow;
                     break;
             }
+            gameObject.SetActive(true);
             mark.SetActive(true);
         }
 
         public void SetParent(Transform p)
         {
-            mark.transform.SetParent(p, false);
+            gameObject.transform.SetParent(p, false);
         }
 
         public void SetPosition(int x, int y)
         {
             mark.transform.position = new Vector2(x, y);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            onBeginDragPosition = eventData.delta;
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            if (eventData.delta.x > onBeginDragPosition.x)
+            {
+                OnSwapLeft(mark.transform.position);
+            }
+            else {
+                OnSwapRight(mark.transform.position);
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            // do nothing
         }
     }
 }

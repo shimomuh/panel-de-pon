@@ -33,30 +33,26 @@ namespace PanelDePon.Domain
             return initialPanels;
         }
 
-        public List<List<PanelModel>> Produce()
+        public List<PanelModel> Produce()
         {
-            List<List<PanelModel>> panels = new List<List<PanelModel>>();
+            List<PanelModel> panels = new List<PanelModel>();
             for (int i = 0; i < FrameModel.WIDTH_PANEL_NUM; i++)
             {
-                panels.Add(new List<PanelModel>());
-                for (int j = 0; j < BLUK_PRODUCT_PANEL_NUM_BY_COLUMN; j++)
+                PanelModel model = new PanelModel();
+                if (i == 0 || i == 1)
                 {
-                    PanelModel model = new PanelModel();
-                    if (i == 0 || i == 1)
-                    {
-                        model.SetMarkRandomly();
-                        panels[i].Add(model);
-                        continue;
-                    }
-                    if (panels[i - 2][j].Mark == panels[i - 1][j].Mark)
-                    {
-                        model.SetMarkRandomlyExceptFor(panels[i - 1][j].Mark);
-                        panels[i].Add(model);
-                        continue;
-                    }
                     model.SetMarkRandomly();
-                    panels[i].Add(model);
+                    panels.Add(model);
+                    continue;
                 }
+                if (panels[i - 2].Mark == panels[i - 1].Mark)
+                {
+                    model.SetMarkRandomlyExceptFor(panels[i - 1].Mark);
+                    panels.Add(model);
+                    continue;
+                }
+                model.SetMarkRandomly();
+                panels.Add(model);
             }
             return panels;
         }

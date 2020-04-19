@@ -75,7 +75,7 @@ namespace PanelDePon.Domain
             erasable = false;
         }
 
-        public void Swip()
+        public void Swap()
         {
             erasable = false;
         }
