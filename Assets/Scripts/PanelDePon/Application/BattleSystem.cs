@@ -6,9 +6,6 @@ namespace PanelDePon.Application
     public sealed class BattleSystem
     {
 
-        public static int INITIAL_PANEL_NUM = 30;
-        public static int MAX_INITIAL_PANEL_NUM_BY_COLUMN = 7;
-
         #region singleton
         private static BattleSystem instance = new BattleSystem();
 
@@ -23,14 +20,14 @@ namespace PanelDePon.Application
         }
         #endregion
 
-        public List<List<PanelModel>> PlaceInitialPanels()
+        public List<List<PanelModel>> PutVisiblePanelsRandomly()
         {
-            return PanelFactory.Instance.Place();
+            return PanelFactory.Instance.PutVisiblePanelsRandomly();
         }
 
-        public List<PanelModel> PrepareHiddenPanels()
+        public List<PanelModel> InsertHiddenPanels()
         {
-            return PanelFactory.Instance.Produce();
+            return PanelFactory.Instance.InsertHiddenPanels();
         }
     }
 }

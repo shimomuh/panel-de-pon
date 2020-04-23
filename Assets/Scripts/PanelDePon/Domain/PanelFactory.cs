@@ -4,7 +4,13 @@ using UnityEngine;
 
 namespace PanelDePon.Domain
 {
-    public sealed class PanelFactory
+    public interface IPanelFactory
+    {
+        List<List<PanelModel>> PutVisiblePanelsRandomly();
+        List<PanelModel> InsertHiddenPanels();
+    }
+
+    public sealed class PanelFactory : IPanelFactory
     {
         #region singleton
         private static PanelFactory instance = new PanelFactory();
@@ -23,16 +29,14 @@ namespace PanelDePon.Domain
         public static int INITIAL_PANEL_NUM = 30;
         public static int MAX_INITIAL_PANEL_NUM_BY_COLUMN = 7;
 
-        private List<List<PanelModel>> initialPanels = new List<List<PanelModel>>();
-
-        public List<List<PanelModel>> Place()
+        public List<List<PanelModel>> PutVisiblePanelsRandomly()
         {
-            PlacePanelsInitially();
-            PutMark();
-            return initialPanels;
+            List<List<PanelModel>> visiblePanels = AssignVisiblePanels(GetRandomPanelNums());
+            visiblePanels = PutMark(visiblePanels);
+            return visiblePanels;
         }
 
-        public List<PanelModel> Produce()
+        public List<PanelModel> InsertHiddenPanels()
         {
             List<PanelModel> panels = new List<PanelModel>();
             for (int i = 0; i < FrameModel.WIDTH_PANEL_NUM; i++)
@@ -56,13 +60,12 @@ namespace PanelDePon.Domain
             return panels;
         }
 
-        private void PlacePanelsInitially()
+        private List<int> GetRandomPanelNums()
         {
-            
+            List<int> panelNums = new List<int>();
             int totalPanelNum = 0;
             for (int i = 0; i < FrameModel.WIDTH_PANEL_NUM; i++)
             {
-                initialPanels.Add(new List<PanelModel>());
                 int panelNum = 0;
                 int essentialPanelNum = INITIAL_PANEL_NUM - totalPanelNum - (FrameModel.WIDTH_PANEL_NUM - i - 1) * MAX_INITIAL_PANEL_NUM_BY_COLUMN;
                 if (i == FrameModel.WIDTH_PANEL_NUM - 1)
@@ -77,50 +80,69 @@ namespace PanelDePon.Domain
                 {
                     panelNum = Random.Range(essentialPanelNum, MAX_INITIAL_PANEL_NUM_BY_COLUMN + 1);
                 }
-                for (int j = 0; j < panelNum; j++)
-                {
-                    initialPanels[i].Add(PanelModel.buildErasablePanel());
-                }
+                panelNums.Add(panelNum);
                 totalPanelNum += panelNum;
             }
-            initialPanels.Shuffle();
+            panelNums.Shuffle();
+            return panelNums;
         }
 
-        private void PutMark()
+        private List<List<PanelModel>> AssignVisiblePanels(List<int> panelNums)
         {
-            for (int i = 0; i < initialPanels.Count; i++)
+            List<List<PanelModel>> visiblePanels = new List<List<PanelModel>>();
+            for (int i = 0; i < FrameModel.WIDTH_PANEL_NUM; i++)
             {
-                for (int j = 0; j < initialPanels[i].Count; j++)
+                visiblePanels.Add(new List<PanelModel>());
+                for (int j = 0; j < FrameModel.HEIGHT_VISIBLE_PANEL_NUM; j++)
                 {
+                    if (panelNums[i] > j)
+                    {
+                        visiblePanels[i].Add(PanelModel.buildErasablePanel());
+                        continue;
+                    }
+                    visiblePanels[i].Add(null);
+                }
+            }
+            return visiblePanels;
+        }
+
+        private List<List<PanelModel>> PutMark(List<List<PanelModel>> visiblePanels)
+        {
+            for (int i = 0; i < visiblePanels.Count; i++)
+            {
+                for (int j = 0; j < visiblePanels[i].Count; j++)
+                {
+                    if (visiblePanels[i][j] == null) { continue; }
                     if (i == 0 && j == 0)
                     {
-                        initialPanels[i][j].SetMarkRandomly();
+                        visiblePanels[i][j].SetMarkRandomly();
                         continue;
                     }
                     if (i == 0)
                     {
-                        initialPanels[i][j].SetMarkRandomlyExceptFor(initialPanels[i][j - 1].Mark);
+                        visiblePanels[i][j].SetMarkRandomlyExceptFor(visiblePanels[i][j - 1].Mark);
                         continue;
                     }
                     if (j == 0)
                     {
-                        if (initialPanels[i - 1].Count > j)
+                        if (visiblePanels[i - 1][j] != null)
                         {
-                            initialPanels[i][j].SetMarkRandomlyExceptFor(initialPanels[i - 1][j].Mark);
+                            visiblePanels[i][j].SetMarkRandomlyExceptFor(visiblePanels[i - 1][j].Mark);
                             continue;
                         }
-                        initialPanels[i][j].SetMarkRandomly();
+                        visiblePanels[i][j].SetMarkRandomly();
                         continue;
                     }
-                    if (initialPanels[i - 1].Count > j)
+                    if (visiblePanels[i - 1][j] != null)
                     {
-                        initialPanels[i][j]
-                            .SetMarkRandomlyExceptFor(new List<string>() { initialPanels[i][j - 1].Mark, initialPanels[i - 1][j].Mark });
+                        visiblePanels[i][j]
+                            .SetMarkRandomlyExceptFor(new List<string>() { visiblePanels[i][j - 1].Mark, visiblePanels[i - 1][j].Mark });
                       continue;
                     }
-                    initialPanels[i][j].SetMarkRandomlyExceptFor(initialPanels[i][j - 1].Mark);
+                    visiblePanels[i][j].SetMarkRandomlyExceptFor(visiblePanels[i][j - 1].Mark);
                 }
             }
+            return visiblePanels;
         }
     }
 }

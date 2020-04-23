@@ -16,19 +16,20 @@ namespace PanelDePon.UI
         void Awake()
         {
             RectTransform frame = GetComponent<RectTransform>();
-            List<List<PanelModel>> panels = BattleSystem.Instance.PlaceInitialPanels();
-            PanelBunlder.Instance.BundleModelWithView(frame, panelSkeleton, panels);
-            PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.PrepareHiddenPanels());
-            PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.PrepareHiddenPanels());
-            PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.PrepareHiddenPanels());
+            List<List<PanelModel>> panels = BattleSystem.Instance.PutVisiblePanelsRandomly();
+            PanelBunlder.Instance.Build(frame, panelSkeleton).BundleModelWithView(panels);
+            for (int i = 0; i < FrameModel.HEIGHT_PANEL_NUM_UNDER_HIDDEN; i++)
+            {
+                PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.InsertHiddenPanels());
+            }
         }
 
-        private void Update()
+        void Update()
         {
             float deltaUp = PanelBunlder.Instance.LastPanelPositonY() - PanelBunlder.LAST_PANEL_INITIAL_POSITION;
             if (deltaUp >= PanelView.HEIGHT)
             {
-                PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.PrepareHiddenPanels(), deltaUp - PanelView.HEIGHT);
+                PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.InsertHiddenPanels(), deltaUp - PanelView.HEIGHT);
             }
         }
     }
