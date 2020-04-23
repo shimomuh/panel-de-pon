@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using PanelDePon.Domain;
 
@@ -27,6 +26,7 @@ namespace PanelDePon.UI {
         private RectTransform frame;
         private PanelView panelSkeleton;
         private static int HIDDEN_PANEL_INDEX_BY_COLUMN = -3;
+        public static float LAST_PANEL_INITIAL_POSITION = -765f;
         private int hiddenPanelNumByColumn = 0;
 
         public void BundleModelWithView(RectTransform frame, PanelView panelSkeleton, List<List<PanelModel>> panelModels)
@@ -41,7 +41,7 @@ namespace PanelDePon.UI {
                 {
                     PanelView panel = Instantiate<PanelView>(panelSkeleton);
                     panel.Initialize(panelModels[column][row], false);
-                    SetPanelPosition(panel, column, row);
+                    SetPanelPosition(panel, column, row, column, row);
                     SetActions(panel);
                     panel.SetParent(frame);
                     panelViewModels[column].Add(panel);
@@ -49,27 +49,45 @@ namespace PanelDePon.UI {
             }
         }
 
-        public void AddBundleModel(List<PanelModel> panelModels)
+        public void AddBundleModel(List<PanelModel> panelModels, float deltaUp = 0f)
         {
+            IncrementCoordinate();
             int row = DecrementHiddenPanelNumByColumn();
             for (var column = 0; column < panelModels.Count; column++)
             {
                 PanelView panel = Instantiate<PanelView>(panelSkeleton);
                 panel.Initialize(panelModels[column], false);
-                SetPanelPosition(panel, column, row);
+                SetPanelPosition(panel, column, row, column, 0, deltaUp);
+                SetActions(panel);
                 panel.SetParent(frame);
                 panelViewModels[column].Insert(0, panel);
             }
         }
 
+        private void IncrementCoordinate()
+        {
+            for (var column = 0; column < panelViewModels.Count; column++)
+            {
+                for (var row = 0; row < panelViewModels[column].Count; row++)
+                {
+                    panelViewModels[column][row].IncrementRow();
+                }
+            }
+        }
+
+        public float LastPanelPositonY()
+        {
+            return panelViewModels[0][0].transform.localPosition.y;
+        }
+
         /// <summary>
         /// change column to x coordinate, row to y coordinate.
         /// </summary>
-        private void SetPanelPosition(PanelView panel, int column, int row)
+        private void SetPanelPosition(PanelView panel, int column, int row, int columnIndex, int rowIndex, float deltaUp = 0f)
         {
-            var x = (int)(-PanelView.WIDTH * FrameModel.WIDTH_PANEL_NUM / 2 + PanelView.WIDTH / 2) + column * PanelView.WIDTH;
-            var y = (int)(-PanelView.HEIGHT * FrameModel.HEIGHT_PANEL_NUM / 2 + PanelView.HEIGHT / 2 + row * PanelView.HEIGHT);
-            panel.SetPosition(x, y);
+            float x = -PanelView.WIDTH * FrameModel.WIDTH_PANEL_NUM / 2 + PanelView.WIDTH / 2 + column * PanelView.WIDTH;
+            float y = -PanelView.HEIGHT * FrameModel.HEIGHT_PANEL_NUM / 2 + PanelView.HEIGHT / 2 + row * PanelView.HEIGHT;
+            panel.SetPositionWithCoordinate(x, y + deltaUp, columnIndex, rowIndex);
         }
 
         private int DecrementHiddenPanelNumByColumn()
@@ -87,10 +105,9 @@ namespace PanelDePon.UI {
             panel.OnSwapRight = SwapRight;
         }
 
-        private void SwapLeft(Vector2 position)
+        private void SwapLeft(Vector2 position, int columnIndex, int rowIndex)
         {
-            Dictionary<string, int> coordinate = ConvertPosition2Coordinate(position);
-            if (coordinate["x"] == 0)
+            if (columnIndex == 0)
             {
                 return;
             }
@@ -98,23 +115,23 @@ namespace PanelDePon.UI {
             {
                 for (int row = 0; row < panelViewModels[column].Count; row++)
                 {
-                    if (coordinate["x"] == column && coordinate["y"] == row)
+                    if (columnIndex == column && rowIndex == row)
                     {
                         var tmp = panelViewModels[column][row];
                         panelViewModels[column][row] = panelViewModels[column - 1][row];
                         panelViewModels[column - 1][row] = tmp;
                         var tmpPos = panelViewModels[column][row].transform.localPosition;
-                        panelViewModels[column][row].transform.localPosition = panelViewModels[column - 1][row].transform.localPosition;
-                        panelViewModels[column - 1][row].transform.localPosition = tmpPos;
+                        panelViewModels[column][row].SetPositionWithCoordinate(panelViewModels[column - 1][row].transform.localPosition.x, panelViewModels[column - 1][row].transform.localPosition.y, column, row);
+                        panelViewModels[column - 1][row].SetPositionWithCoordinate(tmpPos.x, tmpPos.y, column - 1, row);
+                        break;
                     }
                 }
             }
         }
 
-        private void SwapRight(Vector2 position)
+        private void SwapRight(Vector2 position, int columnIndex, int rowIndex)
         {
-            Dictionary<string, int> coordinate = ConvertPosition2Coordinate(position);
-            if (coordinate["x"] == FrameModel.WIDTH_PANEL_NUM - 1)
+            if (columnIndex == FrameModel.WIDTH_PANEL_NUM - 1)
             {
                 return;
             }
@@ -122,25 +139,18 @@ namespace PanelDePon.UI {
             {
                 for (int row = 0; row < panelViewModels[column].Count; row++)
                 {
-                    if (coordinate["x"] == column && coordinate["y"] == row)
+                    if (columnIndex == column && rowIndex == row)
                     {
                         var tmp = panelViewModels[column][row];
                         panelViewModels[column][row] = panelViewModels[column + 1][row];
                         panelViewModels[column + 1][row] = tmp;
                         var tmpPos = panelViewModels[column][row].transform.localPosition;
-                        panelViewModels[column][row].transform.localPosition = panelViewModels[column + 1][row].transform.localPosition;
-                        panelViewModels[column + 1][row].transform.localPosition = tmpPos;
+                        panelViewModels[column][row].SetPositionWithCoordinate(panelViewModels[column + 1][row].transform.localPosition.x, panelViewModels[column + 1][row].transform.localPosition.y, column, row);
+                        panelViewModels[column + 1][row].SetPositionWithCoordinate(tmpPos.x, tmpPos.y, column + 1, row);
+                        break;
                     }
                 }
             }
-        }
-
-        private Dictionary<string, int> ConvertPosition2Coordinate(Vector2 position)
-        {
-            Dictionary<string, int> coordinate = new Dictionary<string, int>();
-            coordinate.Add("x", (int)Mathf.Floor(position.x / PanelView.WIDTH) + 3);
-            coordinate.Add("y", (int)Mathf.Floor(position.y / PanelView.HEIGHT) + 9);
-            return coordinate;
         }
     }
 }

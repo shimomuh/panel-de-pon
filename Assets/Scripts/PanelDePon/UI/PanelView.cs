@@ -28,19 +28,21 @@ namespace PanelDePon.UI
 
         private float beginDragX;
 
-        public Action<Vector2> OnSwapLeft;
-        public Action<Vector2> OnSwapRight;
+        public Action<Vector2, int, int> OnSwapLeft;
+        public Action<Vector2, int, int> OnSwapRight;
+
+        public int columnIndex, rowIndex;
 
         void Awake()
         {
             UnityEngine.Application.targetFrameRate = 60;
-            speed = 20; // normal?
+            speed = 10; // normal?
         }
 
         void Update()
         {
             if (model.IsRisingUp) {
-                mark.transform.position = new Vector2(mark.transform.position.x, mark.transform.position.y + Time.deltaTime * speed);
+                SetPosition(transform.localPosition.x, transform.localPosition.y + Time.deltaTime * speed);
             }
         }
 
@@ -80,26 +82,54 @@ namespace PanelDePon.UI
             transform.SetParent(p, false);
         }
 
-        public void SetPosition(int x, int y)
+        private void SetPosition(float x, float y)
         {
-            transform.localPosition = new Vector2(x, y);
+            transform.localPosition = new Vector3(x, y, 0);
+        }
+
+        private void SetCoordinate(int column, int row)
+        {
+            columnIndex = column;
+            rowIndex = row;
+        }
+
+        public void SetPositionWithCoordinate(float x, float y, int column, int row)
+        {
+            SetPosition(x, y);
+            SetCoordinate(column, row);
+        }
+
+        public void IncrementRow()
+        {
+            rowIndex++;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            beginDragX = eventData.position.x;
+            beginDragX = GetLocalPosition(eventData.position).x;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (eventData.position.x < beginDragX)
+
+            if (GetLocalPosition(eventData.position).x < beginDragX)
             {
-                OnSwapLeft(transform.localPosition);
+                OnSwapLeft(transform.localPosition, columnIndex, rowIndex);
             }
-            if (eventData.position.x > beginDragX)
+            if (GetLocalPosition(eventData.position).x > beginDragX)
             {
-                OnSwapRight(transform.localPosition);
+                OnSwapRight(transform.localPosition, columnIndex, rowIndex);
             }
+        }
+
+        /// <summary>
+        /// In case of "Screen Space - Overlay" of "Canvas" render mode
+        /// must chane screenPosition to localPosition
+        /// (if UI canvas may be able to ignore this problem...)
+        /// </summary>
+        private Vector2 GetLocalPosition(Vector2 screenPosition)
+        {
+            return transform.InverseTransformPoint(screenPosition);
         }
 
         public void OnDrag(PointerEventData eventData)

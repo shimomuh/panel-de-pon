@@ -22,5 +22,14 @@ namespace PanelDePon.UI
             PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.PrepareHiddenPanels());
             PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.PrepareHiddenPanels());
         }
+
+        private void Update()
+        {
+            float deltaUp = PanelBunlder.Instance.LastPanelPositonY() - PanelBunlder.LAST_PANEL_INITIAL_POSITION;
+            if (deltaUp >= PanelView.HEIGHT)
+            {
+                PanelBunlder.Instance.AddBundleModel(BattleSystem.Instance.PrepareHiddenPanels(), deltaUp - PanelView.HEIGHT);
+            }
+        }
     }
 }
