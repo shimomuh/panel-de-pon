@@ -84,7 +84,7 @@ namespace PanelDePon.UI
 
         private void SetPosition(float x, float y)
         {
-            transform.localPosition = new Vector3(x, y, 0);
+            transform.localPosition = new Vector2(x, y);
         }
 
         private void SetCoordinate(int column, int row)

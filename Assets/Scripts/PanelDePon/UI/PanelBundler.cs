@@ -25,20 +25,26 @@ namespace PanelDePon.UI {
         private List<List<PanelView>> panelViewModels;
         private RectTransform frame;
         private PanelView panelSkeleton;
-        private static int HIDDEN_PANEL_INDEX_BY_COLUMN = -3;
-        public static float LAST_PANEL_INITIAL_POSITION = -765f;
+        private static int HIDDEN_PANEL_INDEX_BY_COLUMN = -2;
+        public static float LAST_PANEL_INITIAL_POSITION = -1215f;
         private int hiddenPanelNumByColumn = 0;
 
-        public void BundleModelWithView(RectTransform frame, PanelView panelSkeleton, List<List<PanelModel>> panelModels)
+        public PanelBunlder Build(RectTransform frame, PanelView panelSkeleton)
         {
-            panelViewModels = new List<List<PanelView>>();
             this.frame = frame;
             this.panelSkeleton = panelSkeleton;
+            return this;
+        }
+
+        public void BundleModelWithView(List<List<PanelModel>> panelModels)
+        {
+            panelViewModels = new List<List<PanelView>>();
             for (var column = 0; column < panelModels.Count; column++)
             {
                 panelViewModels.Add(new List<PanelView>());
                 for (var row = 0; row < panelModels[column].Count; row++)
                 {
+                    if (panelModels[column][row] == null) { continue; }
                     PanelView panel = Instantiate<PanelView>(panelSkeleton);
                     panel.Initialize(panelModels[column][row], false);
                     SetPanelPosition(panel, column, row, column, row);
@@ -86,7 +92,7 @@ namespace PanelDePon.UI {
         private void SetPanelPosition(PanelView panel, int column, int row, int columnIndex, int rowIndex, float deltaUp = 0f)
         {
             float x = -PanelView.WIDTH * FrameModel.WIDTH_PANEL_NUM / 2 + PanelView.WIDTH / 2 + column * PanelView.WIDTH;
-            float y = -PanelView.HEIGHT * FrameModel.HEIGHT_PANEL_NUM / 2 + PanelView.HEIGHT / 2 + row * PanelView.HEIGHT;
+            float y = -PanelView.HEIGHT * FrameModel.HEIGHT_VISIBLE_PANEL_NUM / 2 + PanelView.HEIGHT / 2 + row * PanelView.HEIGHT;
             panel.SetPositionWithCoordinate(x, y + deltaUp, columnIndex, rowIndex);
         }
 
